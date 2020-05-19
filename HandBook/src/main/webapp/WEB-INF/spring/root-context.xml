@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+		
+	<bean id="HikariConfig" class="com.zaxxer.hikari.HikariConfig" ><!-- 
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe"/> -->
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"/>
+		<property name="username" value="HANDBOOK"/>
+		<property name="password" value="123"/>
+		
+	</bean>
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<constructor-arg ref="HikariConfig"/>
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+  	<!-- servlet-context에 넣으면 안됨 이유 모름 ! -->
+  	<!-- 이미지 파일   -->
+  	<bean class="java.lang.String" id="uploadPath">
+	<constructor-arg value="C:\Users\els78\git\HandBook\HandBook\src\main\webapp\resources"/>
+	<!-- <constructor-arg value="C:\Users\SangJin\git\HandBook\HandBook\src\main\webapp\resources"/> -->
+	</bean>
+	<!-- 업로드 경로 및 사이즈 -->
+	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+	 <property name="maxUploadSize" value="10485760"/>
+	</bean>
+	<context:component-scan base-package="com.handbook.*"/>
+	<mybatis-spring:scan base-package="com.handbook.mapper"/>	
+	
+	
+</beans>

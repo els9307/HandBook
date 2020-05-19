@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+<!-- single layout -->
+
+
+<!-- main layout -->
+	<definition name="contents" template="/WEB-INF/tiles/contents_layout.jsp">
+		<put-attribute name="html-header" value="/WEB-INF/views/common/html-header.jsp"/>
+		<put-attribute name="header" value="/WEB-INF/views/common/Header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/common/Footer.jsp" />
+		<put-attribute name="v" value="/WEB-INF/views/common/FooterScript.jsp" />
+		<!-- <put-attribute name="left" value="/WEB-INF/views/common/left.jsp" /> -->
+	</definition>
+
+
+	<definition name="*.c" extends="contents">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+
+	<definition name="*/*.c" extends="contents">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+	
+	<definition name="SingleHeader" template="/WEB-INF/tiles/SingleHeader_layout.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/common/Header.jsp" />
+		<put-attribute name="ScriptHeader" value="/WEB-INF/views/common/FooterScript.jsp" />
+	</definition>
+	
+	<definition name="*.h" extends="SingleHeader">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+	<definition name="*/*.h" extends="SingleHeader">
+	
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+
+
+	<definition name="single" template="/WEB-INF/tiles/single-layout.jsp">
+		<put-attribute name="html-header" value="/WEB-INF/views/common/html-header.jsp"/>
+	</definition>
+
+
+	<definition name="*.s" extends="single">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+
+	<definition name="*/*.s" extends="single">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+
+
+	<definition name="inner" template="/WEB-INF/tiles/inner-layout.jsp">
+	</definition>
+
+
+	<definition name="*.i" extends="inner">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+
+	<definition name="*/*.i" extends="inner">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+</tiles-definitions>

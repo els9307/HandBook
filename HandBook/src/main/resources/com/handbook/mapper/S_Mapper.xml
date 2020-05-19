@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.handbook.mapper.S_Mapper">
+
+   
+	<resultMap type="com.handbook.vo.S_FRIENDLIST" id="S_FRIENDLIST">
+			<id column="m_name" property="m_name" />
+			<result column="f_name" property = "f_name"/>
+			<result column="n_state" property = "n_state"/>
+			<result column="reg_date" property = "reg_date"/>
+	</resultMap>
+	
+	<resultMap type="com.handbook.vo.S_USERINFO" id="S_USERINFO">
+		<id column="user_id" property="user_id" />
+		<result column="user_pwd" property = "user_pwd"/>
+		<result column="user_name" property = "user_name"/>
+		<result column="user_ncikname" property = "user_nickname"/>
+		<result column="user_email" property = "user_email"/>
+		<result column="reg_date" property = "reg_date"/>
+		<result column="user_img" property = "user_img"/>
+		<result column="user_thumbimg" property = "user_thumbimg"/>
+		<result column="check" property = "check"/>
+		<result column="mod_date" property = "mod_date"/>
+		<collection property="s_friendlist" resultMap="S_FRIENDLIST"/>
+		
+	</resultMap>
+	
+   <select id="frinedList" parameterType="com.handbook.vo.S_USERINFO" resultMap="S_USERINFO">
+		<![CDATA[
+			-- 친구 목록
+			SELECT SU.USER_ID,SF.F_NAME,SF.N_STATE,SU.USER_THUMBIMG
+			FROM S_USERINFO SU JOIN S_FRIEND SF
+			ON SU.USER_ID = SF.M_NAME
+			WHERE USER_ID = #{user_id}
+		]]>
+	</select>
+	
+	<select id="idChk" resultType="int">
+		<![CDATA[
+			-- 중복검사
+			SELECT COUNT(*)
+			FROM S_USERINFO
+			WHERE USER_ID = #{user_id}
+		]]>
+	</select>
+	
+	<insert id="userJoin">
+		<![CDATA[
+			-- 회원가입
+			INSERT INTO S_USERINFO(
+			                       USER_ID
+			                       ,USER_PWD
+			                       ,USER_NAME
+			                       ,USER_NICKNAME
+			                       ,USER_EMAIL
+			                       ,REG_DATE
+			                       )VALUES(
+			                        #{user_id}
+			                       ,#{user_pwd}
+			                       ,#{user_name}
+			                       ,#{user_nickname}
+			                       ,#{user_email}
+			                       ,TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS'))
+		]]>
+	</insert>
+	<select id="userlogin" resultType="com.handbook.vo.S_USERINFO">
+	<select id="userlogin" resultMap="S_USERINFO">
+		<![CDATA[
+			SELECT    SU.USER_ID
+                     ,SU.USER_PWD
+                     ,SU.USER_NAME
+                     ,SU.USER_NICKNAME
+                     ,SU.USER_EMAIL
+                     ,SU.REG_DATE
+                     ,SU.USER_IMG
+                     ,SU.USER_THUMBIMG
+                     ,SU.MOD_DATE
+            FROM S_USERINFO SU
+            WHERE SU.USER_ID = #{user_id}
+		]]>
+	</select>
+	<update id="userUpdate" parameterType="com.handbook.vo.S_USERINFO">
+		<![CDATA[
+						-- 회원정보 수정
+			UPDATE S_USERINFO
+				SET
+			 	 USER_EMAIL 	= #{user_email}
+				,USER_NAME 		= #{user_name}
+				,USER_NICKNAME 	= #{user_nickname}
+				,USER_IMG 		= #{user_img}
+				,USER_THUMBIMG 	= #{user_thumbimg}
+				,MOD_DATE 		= TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS')
+		]]>
+			<if test='check == "Y"'>
+				,USER_PWD 		= #{user_pwd}
+			</if>
+		<![CDATA[
+				WHERE USER_ID  = #{user_id}
+		]]>
+	</update>
+	<insert id="BoardInsert">
+		<![CDATA[
+			INSERT INTO S_BOARD (
+                      B_NUM
+                     ,B_USER_ID
+                     ,B_TITLE
+                     ,B_CONTENT
+                     ,B_IMG
+                     ,B_THUMBIMG
+                     ,REG_DATE
+                     )VALUES(
+                      S_BOARD_SEQ.nextval
+                     ,#{b_user_id}          -- 아이디
+                     ,#{b_title}          -- 제목
+                     ,#{b_content}          -- 내용
+                     ,#{b_img}          -- 이미지1
+                     ,#{b_thumbimg}          -- 이미지2
+                     ,TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS'))
+		]]>
+	</insert>
+	<select id="ListResult" resultType="com.handbook.vo.S_BOARD">
+		<![CDATA[
+			SELECT 
+			     B_NUM                  as B_NUM
+			    ,B_USER_ID              as B_USER_ID
+			    ,B_TITLE                as B_TITLE
+			    ,B_CONTENT              as B_CONTENT
+			    ,(SELECT    
+			        USER_THUMBIMG 
+			      FROM 
+			        S_USERINFO
+			      WHERE 
+			        USER_ID = 'admin')  as B_IMG
+			    ,B_THUMBIMG             as B_THUMBIMG
+			    ,REG_DATE               as REG_DATE
+			    ,MOD_DATE               as MOD_DATE
+			FROM
+			    S_BOARD
+		]]>
+	</select>
+	<delete id="detailViewDelete" parameterType="String">
+		<![CDATA[
+			DELETE
+			FROM
+				S_BOARD
+			WHERE B_NUM = #{b_num}
+		]]>
+	</delete>
+</mapper>
