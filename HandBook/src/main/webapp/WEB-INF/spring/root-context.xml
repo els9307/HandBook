@@ -27,7 +27,7 @@
   	<!-- servlet-context에 넣으면 안됨 이유 모름 ! -->
   	<!-- 이미지 파일   -->
   	<bean class="java.lang.String" id="uploadPath">
-	<constructor-arg value="C:\Users\els78\git\HandBook\HandBook\src\main\webapp\resources"/>
+	<constructor-arg value="C:\Users\els78\Documents\HandBook\HandBook\src\main\webapp\resources"/>
 	<!-- <constructor-arg value="C:\Users\SangJin\git\HandBook\HandBook\src\main\webapp\resources"/> -->
 	</bean>
 	<!-- 업로드 경로 및 사이즈 -->

@@ -1,6 +1,7 @@
 package com.handbook.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.UUID;
@@ -15,13 +16,8 @@ public class UploadFileUtils {
 	static final int THUMB_WIDTH = 300;
 	static final int THUMB_HEIGHT = 300;
 
-	public static String fileUpload(String imgPath,byte[] fileData,String realName
-			)
-			throws Exception {
-		System.out.println("uploadfile in==============");
-		System.out.println(imgPath);
-		System.out.println(realName);
-
+	
+	public static String fileUpload(String imgPath,byte[] fileData,String realName) throws IOException {
 		File target = new File(imgPath, realName);
 		FileCopyUtils.copy(fileData, target);
 
@@ -33,6 +29,17 @@ public class UploadFileUtils {
 			thumbnail.getParentFile().mkdirs();
 			Thumbnails.of(image).size(THUMB_WIDTH, THUMB_HEIGHT).toFile(thumbnail);
 		}
+		return realName;
+		
+	}
+	public static String fileUpload(String realName
+			)
+			throws Exception {
+		System.out.println("uploadfile in==============");
+		
+		System.out.println(realName);
+
+		
 		return realName;
 	}
 	public static String fileUpload( String fileName, String ymdPath)

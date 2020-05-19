@@ -80,14 +80,14 @@ public class HomeController {
 		model.addAttribute("info", info);
 		return "S_index.c";
 	}
-	// 유저정보
+	// �쑀���젙蹂�
 	@PostMapping("S_myPage")
 	public String S_myPage(S_USERINFO userinfo, Model model) {
 		S_USERINFO info = s_service.userlogin(userinfo);
 		model.addAttribute("info", info);
 		return "S_myPage.c";
 	}
-	// 로그인
+	// 濡쒓렇�씤
 	@PostMapping("user_login")
 	public String user_login(S_USERINFO userinfo, HttpSession session, Model model) {
 		S_USERINFO login = s_service.userlogin(userinfo);
@@ -128,7 +128,7 @@ public class HomeController {
 
 
 
-	// 아이디 중복확인
+	// �븘�씠�뵒 以묐났�솗�씤
 	@PostMapping("idChk")
 	@ResponseBody
 	public int idChk(S_USERINFO userinfo) {
@@ -136,7 +136,7 @@ public class HomeController {
 		return result;
 	}
 
-	// 회원가입
+	// �쉶�썝媛��엯
 	@PostMapping("User_Join")
 	public String user_join(S_USERINFO userinfo) {
 		int result = s_service.idChk(userinfo);
@@ -178,23 +178,19 @@ public class HomeController {
 	@PostMapping("BoardInsert")
 	public String BoardInsert(S_BOARD board, String check, MultipartFile file, HttpServletRequest req, Model model,String realName)
 			throws IOException, Exception {
-		System.out.println("체크값=" + check);
-		System.out.println("아이디=" + board.getB_user_id());
-		System.out.println("제목=" + board.getB_title());
-		System.out.println("내용=" + board.getB_content());
-			logger.info("POST  -  글쓰기");
+			logger.info("POST  -  湲��벐湲�");
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
-			String imgUploadPath = uploadPath + File.separator ;
-			String imgPath = imgUploadPath;
+			
+			//로컬주소
+	
 			String fileName = "";
-			System.out.println(realName);
-			fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),realName);
+			fileName = UploadFileUtils.fileUpload(realName);
 			board.setB_img(realName);
-		}else {//파일첨부를 하지 않으면
+		}else {//�뙆�씪泥⑤�瑜� �븯吏� �븡�쑝硫�
 			board.setB_num("");
 		}
-			s_service.BoardInsert(board);
-		return "S_index.c";
+		s_service.BoardInsert(board);
+		return "redirect:S_index.c";
 	}
 
 	@PostMapping("RealName")
@@ -202,8 +198,15 @@ public class HomeController {
 	public String RealName(MultipartFile file) throws Exception {
 		String imgUploadPath = uploadPath + File.separator + "imgUpload";
 		String ymdPath = UploadFileUtils.calcPath(imgUploadPath);
+		//경로만 들고옴
+		System.out.println("ymdPath"+ymdPath);
 		String fileName = UploadFileUtils.fileUpload(file.getOriginalFilename(),ymdPath);
-		//여기서 임시테이블 저장 
+		System.out.println("파일네임"+fileName);
+		
+		String imgUploadPath1 = uploadPath + File.separator ;
+		String imgPath = imgUploadPath1;
+		//로컬주소
+		fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),fileName);
 		return fileName;
 	}
 	@PostMapping("detailViewDelete")
@@ -218,9 +221,13 @@ public class HomeController {
 		model.addAttribute("arr",arr);
 		return "callBack/FriendList";
 	}
-	//친구유저  페이지 이동
 	@GetMapping("S_userPage")
 	public String myPage() {
+		return "S_userPage.h";
+	}
+	@PostMapping("S_userPage")
+	public String S_userPage(String fName) {
+		System.out.println("fName="+fName);
 		return "S_userPage.h";
 	}
 }

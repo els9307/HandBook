@@ -60,7 +60,6 @@
 	<body>
 
 <!-- Wrapper -->
-<form action="S_userPage" method="post" id="frmUserPage">
 <form action="S_myPage" method="post" id="frmUserPage">
 	<input type="hidden" name="user_id" value="${session_id}">
 </form>
