@@ -67,7 +67,4 @@ public class S_Service {
 		List <S_USERINFO> userInfo = s_mapper.UserSearch(userName);
 		return userInfo;
 	}
-	public void board_Update(S_BOARD board) {
-		s_mapper.board_Update(board);
-	}
 }

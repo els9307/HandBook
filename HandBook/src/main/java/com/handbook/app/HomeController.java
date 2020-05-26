@@ -28,6 +28,7 @@ import com.handbook.service.S_Service;
 import com.handbook.util.UploadFileUtils;
 import com.handbook.vo.S_BOARD;
 import com.handbook.vo.S_FRIENDLIST;
+import com.handbook.vo.S_ImgPathName;
 import com.handbook.vo.S_USERINFO;
 
 /**
@@ -163,7 +164,7 @@ public class HomeController {
 			String imgUploadPath = uploadPath + File.separator ;
 			String imgPath = imgUploadPath;
 			String fileName = "";
-			fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),realName);
+			//fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),realName);
 			userinfo.setUser_img(realName);
 		} else {
 			userinfo.setUser_img(req.getParameter("user_img"));
@@ -182,7 +183,7 @@ public class HomeController {
 			//로컬주소
 	
 			String fileName = "";
-			fileName = UploadFileUtils.fileUpload(realName);
+			
 			board.setB_img(realName);
 		}else {//�뙆�씪泥⑤�瑜� �븯吏� �븡�쑝硫�
 			board.setB_num("");
@@ -191,21 +192,21 @@ public class HomeController {
 		return "redirect:S_index.c";
 	}
 
-	@PostMapping("RealName")
+	@PostMapping("subName")
 	@ResponseBody
-	public String RealName(MultipartFile file) throws Exception {
+	public S_ImgPathName subName(MultipartFile file) throws Exception {
 		String imgUploadPath = uploadPath + File.separator + "imgUpload";
 		String ymdPath = UploadFileUtils.calcPath(imgUploadPath);
 		//경로만 들고옴
 		System.out.println("ymdPath"+ymdPath);
-		String fileName = UploadFileUtils.fileUpload(file.getOriginalFilename(),ymdPath);
-		System.out.println("파일네임"+fileName);
+		S_ImgPathName img = UploadFileUtils.fileUpload(file.getOriginalFilename(),ymdPath);
+		System.out.println("파일네임"+img.getRealName());
 		
 		String imgUploadPath1 = uploadPath + File.separator ;
 		String imgPath = imgUploadPath1;
 		//로컬주소
-		fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),fileName);
-		return fileName;
+		img = UploadFileUtils.subFileUpload(imgPath,  file.getBytes(),img);
+		return img;
 	}
 	@PostMapping("detailViewDelete")
 	public String detailViewDelete(String b_num) {

@@ -21,6 +21,7 @@ $(document).ready(function(){
 		var data = new FormData(form);
 		var text = "";
 		var textarea =  $("#b_content").val();
+		alert("123");
 		$.ajax({
             type: "POST",
             url: "subName",
