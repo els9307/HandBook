@@ -21,21 +21,20 @@ $(document).ready(function(){
 		var data = new FormData(form);
 		var text = "";
 		var textarea =  $("#b_content").val();
-		var hidden = $("#realName").val();
 		$.ajax({
             type: "POST",
-            url: "RealName",
+            url: "subName",
             data: data,
             processData: false,
             contentType: false,
             cache: false,
             timeout: 600000,
-            success: function (realName) {
-            	alert(realName);
-      			var br = textarea + "<br><img src = ${pageContext.request.contextPath}"+realName + "/>" ;
+            success: function (img) {
+            	alert(img.realName);
+      			var br = textarea + "<br><img src = ${pageContext.request.contextPath}"+img.realName + "/>" ;
       			$("#b_content").val(br);
-            	$("#realName").val(realName);
             	$("#B_Inser_Btn").click(function(){
+            		$("#realName").val(img.realName);
                 	$("#frm_B_Insert").submit();
     			});
             }
@@ -52,11 +51,14 @@ $(document).ready(function(){
 	});
 });
 </script>
+
 <article class="post">
 	<header>
+	
+	
 		<div class="meta">
-			<time class="published" datetime="2015-11-01">November 1, 2015</time>
-			<a href="#" class="author"><span class="name">Jane Doe</span><img src="images/avatar.jpg" alt="" /></a>
+			<!-- <time class="published" datetime="2015-11-01">November 1, 2015</time> -->
+			<a href="#" class="author"><span class="name">${info.user_name }</span><img src="${pageContext.request.contextPath}${info.user_img}" alt="" /></a>
 		</div>
 		<div class="title">
 			<h2><a href="#"></a></h2>
@@ -70,7 +72,6 @@ $(document).ready(function(){
 <div id="ex1" class="modal">
 	<form action="BoardInsert" method="post" id="frm_B_Insert" enctype="multipart/form-data">
 	<input type="hidden" id="b_user_id" name="b_user_id" value="${session_id }">
-	<input type="hidden" id="check" name="check" value="INSERT">
 		<div>제목 : <input type="text" style="width: 60%; display: inline;" id="b_title" name="b_title"></div>
 			<p style="display: contents;">내용 : </p>
 			<textarea id="b_content" name="b_content" rows="" cols="" ></textarea>

@@ -14,6 +14,7 @@ $(document).ready(function(){
 		
 //	})
 	$("#gdsImg").change(function(){
+		alert("123123");
 		var form = $("#frmUserUpdate")[0];
 		var data = new FormData(form);
 		$.ajax({
