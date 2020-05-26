@@ -30,7 +30,6 @@
 	</style>
 	<script>
 		$(document).ready(function(){
-			
 			$("#click").click(function(){
 				$.ajax({
 					type : "post",

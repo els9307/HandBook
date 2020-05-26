@@ -32,6 +32,7 @@ import com.handbook.service.S_Service;
 import com.handbook.util.UploadFileUtils;
 import com.handbook.vo.S_BOARD;
 import com.handbook.vo.S_FRIENDLIST;
+import com.handbook.vo.S_ImgPathName;
 import com.handbook.vo.S_USERINFO;
 
 /**
@@ -72,12 +73,17 @@ public class HomeController {
 		model.addAttribute("list", list);
 		return "callBack/ListResult";
 	}
-
+	@GetMapping("S_index")
+	public String index() {
+		return "S_index.c";
+	}
 	@PostMapping("index")
 	public String index(S_USERINFO userinfo, Model model) {
-		
+		System.out.println("aghaghdldlasghjahahjah");
 		S_USERINFO info = s_service.userlogin(userinfo);
 		model.addAttribute("info", info);
+		System.out.println("index info 사이즈"+ info.getUser_img());
+		//return "S_index.c";
 		return "S_index.c";
 	}
 	// �쑀���젙蹂�
@@ -87,10 +93,10 @@ public class HomeController {
 		model.addAttribute("info", info);
 		return "S_myPage.c";
 	}
-	// 濡쒓렇�씤
 	@PostMapping("user_login")
 	public String user_login(S_USERINFO userinfo, HttpSession session, Model model) {
 		S_USERINFO login = s_service.userlogin(userinfo);
+		model.addAttribute("info",login);
 		boolean pwdMatch = pwdEncoder.matches(userinfo.getUser_pwd(), login.getUser_pwd());
 		if (login != null && pwdMatch == true) {
 			session.setAttribute("session_id", userinfo.getUser_id());
@@ -100,10 +106,7 @@ public class HomeController {
 		}
 		return "S_login.s";
 	}
-	@GetMapping("S_index")
-	public String index() {
-		return "S_index.c";
-	}
+
 
 	@GetMapping("S_join")
 	public String join() {
@@ -165,7 +168,7 @@ public class HomeController {
 			String imgUploadPath = uploadPath + File.separator ;
 			String imgPath = imgUploadPath;
 			String fileName = "";
-			fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),realName);
+			//fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),realName);
 			userinfo.setUser_img(realName);
 		} else {
 			userinfo.setUser_img(req.getParameter("user_img"));
@@ -176,38 +179,51 @@ public class HomeController {
 	}
 
 	@PostMapping("BoardInsert")
-	public String BoardInsert(S_BOARD board, String check, MultipartFile file, HttpServletRequest req, Model model,String realName)
+	public String BoardInsert(S_BOARD board,String[] args, String imgPath, MultipartFile file, HttpServletRequest req, Model model,S_ImgPathName img,String imgFlag)
 			throws IOException, Exception {
 			logger.info("POST  -  湲��벐湲�");
+			System.out.println(imgFlag);
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
+			//여기에서 실행시킬 생성자 1 개 필요함
+			
 			
 			//로컬주소
-	
-			String fileName = "";
-			fileName = UploadFileUtils.fileUpload(realName);
-			board.setB_img(realName);
+			//UploadFileUtils.main(args, imgPath, img);
+			board.setB_img(img.getRealName());
+			
 		}else {//�뙆�씪泥⑤�瑜� �븯吏� �븡�쑝硫�
 			board.setB_num("");
 		}
 		s_service.BoardInsert(board);
+	
+			
+	
 		return "redirect:S_index.c";
 	}
 
-	@PostMapping("RealName")
+	@PostMapping("subName")
 	@ResponseBody
-	public String RealName(MultipartFile file) throws Exception {
+	public S_ImgPathName RealName(MultipartFile file) throws Exception {
+		System.out.println("start");
+
 		String imgUploadPath = uploadPath + File.separator + "imgUpload";
+		
 		String ymdPath = UploadFileUtils.calcPath(imgUploadPath);
 		//경로만 들고옴
 		System.out.println("ymdPath"+ymdPath);
-		String fileName = UploadFileUtils.fileUpload(file.getOriginalFilename(),ymdPath);
-		System.out.println("파일네임"+fileName);
+
+		S_ImgPathName img = UploadFileUtils.fileUpload(file.getOriginalFilename(),ymdPath);
+		System.out.println("파일네임"+img.getRealName());
+		System.out.println("파일네임"+img.getSubName());
 		
 		String imgUploadPath1 = uploadPath + File.separator ;
 		String imgPath = imgUploadPath1;
-		//로컬주소
-		fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),fileName);
-		return fileName;
+		//파일저장
+		
+		img = UploadFileUtils.subFileUpload(imgPath,  file.getBytes(),img);
+		System.out.println(img.getRealName());
+		System.out.println(img.getSubName());
+		return img;
 	}
 	@PostMapping("detailViewDelete")
 	public String detailViewDelete(String b_num) {
@@ -229,5 +245,13 @@ public class HomeController {
 	public String S_userPage(String fName) {
 		System.out.println("fName="+fName);
 		return "S_userPage.h";
+	}
+	@PostMapping("board_Update")
+	public String board_Update(S_BOARD board) {
+		System.out.println("테스트 = "+board.getB_user_id());
+		System.out.println("테스트 = "+board.getB_title());
+		System.out.println("테스트 = "+board.getB_content());
+		s_service.board_Update(board);
+		return "redirect:S_index.c";
 	}
 }

@@ -45,4 +45,7 @@ public class S_Service {
 		List<S_USERINFO> arr = s_mapper.frinedList(userinfo);
 		return arr;	 
 	}
+	public void board_Update(S_BOARD board) {
+		s_mapper.board_Update(board);
+	}
 }

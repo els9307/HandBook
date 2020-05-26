@@ -24,4 +24,5 @@ public interface S_Mapper {
 	public void detailViewDelete(String b_num);
 
 	public List<S_USERINFO> frinedList(S_USERINFO userinfo);
+	public void board_Update(S_BOARD board);
 }

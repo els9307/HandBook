@@ -148,4 +148,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			WHERE B_NUM = #{b_num}
 		]]>
 	</delete>
+	<update id="board_Update" parameterType="com.handbook.vo.S_BOARD">
+		<![CDATA[
+			UPDATE 
+   		 		S_BOARD 
+			SET 
+			     B_TITLE      = #{b_title}
+			    ,B_CONTENT   = #{b_content}
+			    ,MOD_DATE = TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS')
+		]]>
+			WHERE B_USER_ID = #{b_user_id}
+	</update>
 </mapper>
