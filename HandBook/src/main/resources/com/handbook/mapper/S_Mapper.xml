@@ -7,14 +7,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
    
 	<resultMap type="com.handbook.vo.S_FRIENDLIST" id="S_FRIENDLIST">
-			<id column="m_name" property="m_name" />
-			<result column="f_name" property = "f_name"/>
-			<result column="n_state" property = "n_state"/>
+			<result column="fuser_id" property="fuser_id" />
+			<result column="f_id" property = "f_id"/>
+			<result column="m_state" property = "m_state"/>
+			<result column="f_state" property = "f_state"/>
 			<result column="reg_date" property = "reg_date"/>
 	</resultMap>
 	
 	<resultMap type="com.handbook.vo.S_USERINFO" id="S_USERINFO">
-		<id column="user_id" property="user_id" />
+		<result column="user_id" property="user_id" />
 		<result column="user_pwd" property = "user_pwd"/>
 		<result column="user_name" property = "user_name"/>
 		<result column="user_ncikname" property = "user_nickname"/>
@@ -31,10 +32,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
    <select id="frinedList" parameterType="com.handbook.vo.S_USERINFO" resultMap="S_USERINFO">
 		<![CDATA[
 			-- 친구 목록
-			SELECT SU.USER_ID,SF.F_NAME,SF.N_STATE,SU.USER_THUMBIMG
+			SELECT SU.USER_ID,SF.F_ID,SF.M_STATE,SF.F_STATE,SF.REG_DATE
 			FROM S_USERINFO SU JOIN S_FRIEND SF
-			ON SU.USER_ID = SF.M_NAME
-			WHERE USER_ID = #{user_id}
+			ON SU.USER_ID = SF.FUSER_ID	
+			WHERE SU.USER_ID =  #{user_id}
+			
 		]]>
 	</select>
 	
@@ -44,6 +46,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			SELECT COUNT(*)
 			FROM S_USERINFO
 			WHERE USER_ID = #{user_id}
+		]]>
+	</select>
+	
+	
+	
+	<select id="UserSearch" parameterType="String" resultMap="S_USERINFO">
+		<![CDATA[
+			-- 유저 검색
+			SELECT *
+			FROM S_USERINFO
+			WHERE LOWER(USER_NAME) like LOWER('%'||#{user_name}||'%')
 		]]>
 	</select>
 	
@@ -148,4 +161,51 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			WHERE B_NUM = #{b_num}
 		]]>
 	</delete>
+	
+	 <select id="getUserPage" parameterType="String" resultMap="S_USERINFO">
+		<![CDATA[
+			-- userPage
+			SELECT    SU.USER_ID
+                     ,SU.USER_PWD
+                     ,SU.USER_NAME
+                     ,SU.USER_NICKNAME
+                     ,SU.USER_EMAIL
+                     ,SU.REG_DATE
+                     ,SU.USER_IMG
+                     ,SU.USER_THUMBIMG
+                     ,SU.MOD_DATE
+            FROM S_USERINFO SU
+            WHERE SU.USER_ID = #{user_id}
+		]]>
+	</select>
+	
+	<insert id="ApplyFriend" parameterType="com.handbook.vo.S_FRIENDLIST">
+		<![CDATA[
+			--insert FriendList
+			INSERT INTO S_FRIEND
+			(
+			     FUSER_ID,
+			     F_ID,
+			     M_STATE,
+			     REG_DATE,
+			     F_STATE
+			)
+			SELECT 
+			     #{fuser_id},
+			     #{f_id},
+			     1,
+			     SYSDATE,
+			     1
+			FROM DUAL
+			
+			WHERE NOT EXISTS
+			(
+			SELECT 
+			    FUSER_ID,
+			    F_ID
+			FROM S_FRIEND
+			WHERE FUSER_ID = #{fuser_id} AND F_ID = #{f_id})
+
+		]]>
+	</insert>
 </mapper>

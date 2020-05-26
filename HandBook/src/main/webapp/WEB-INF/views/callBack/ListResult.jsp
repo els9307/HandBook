@@ -19,7 +19,7 @@ function Fn_DetailDelete(b_num){
 		</div>
 		<div class="meta">
 			<time class="published" datetime="2015-11-01">November 1, 2015</time>
-			<a href="#" class="author">
+			<a href="#" class="author">asdasdasd</a>
 			<a href="S_userPage" class="author">
 				<span class="name">${list.b_user_id }</span>
 				<img src="${pageContext.request.contextPath}${list.b_img}" alt="" />

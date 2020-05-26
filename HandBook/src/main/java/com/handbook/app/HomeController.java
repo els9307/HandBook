@@ -6,14 +6,12 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.imageio.IIOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
 import com.handbook.service.S_Service;
 import com.handbook.util.UploadFileUtils;
 import com.handbook.vo.S_BOARD;
@@ -69,6 +65,8 @@ public class HomeController {
 	@PostMapping("ListResult")
 	public String ListResult(S_BOARD board1, Model model) {
 		List<S_BOARD> list = s_service.ListResult(board1);
+		System.out.println(list.size());
+
 		model.addAttribute("list", list);
 		return "callBack/ListResult";
 	}
@@ -218,16 +216,47 @@ public class HomeController {
 	@PostMapping("friendList")
 	public  String friendList(Model model,HttpSession session,S_USERINFO userinfo,S_FRIENDLIST friendlist) {
 		List<S_USERINFO> arr = s_service.friendList(userinfo);
+		System.out.println(arr.size());
 		model.addAttribute("arr",arr);
 		return "callBack/FriendList";
 	}
 	@GetMapping("S_userPage")
-	public String myPage() {
+	public String UserPage() {
 		return "S_userPage.h";
 	}
+	
 	@PostMapping("S_userPage")
-	public String S_userPage(String fName) {
-		System.out.println("fName="+fName);
+	public String UserPage(String f_id,S_USERINFO userinfo,Model model) {
+		System.out.println("진입");
+		S_USERINFO userInfo = s_service.getUserPage(f_id);
+		model.addAttribute("userInfo",userInfo);
 		return "S_userPage.h";
 	}
+	
+	//친구신청
+	/* m_state : 자신의 상태
+	 * f_state : 친구의 상태
+	 * flag 값 1: 친구신청 발신상태
+	 * flag 값 2: 친구신청 수신상태
+	 * flag 값 3: 이미 친구상태
+	 * 친구 신청을 누를경우 DB S_friend 안에 값을 넣는다.
+	 *  */
+	@PostMapping("ApplyFriend")
+	public void ApplyFriend(S_FRIENDLIST friendList) {
+		s_service.ApplyFriend(friendList);
+	}
+	
+	/* 유저 검색 */
+	@PostMapping("UserSearch")
+	public String UserSearch(String userName,Model model )  {
+		
+			List <S_USERINFO> userInfo = s_service.UserSearch(userName);
+			if(userInfo.size()==0 || userName == "") {
+				 return "callBack/NotUserList";
+			}else {
+				model.addAttribute("userInfo",userInfo);
+				 return "callBack/UserList";
+			}
+	}
+	
 }

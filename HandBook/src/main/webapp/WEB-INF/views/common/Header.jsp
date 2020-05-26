@@ -49,13 +49,28 @@
 			$("#myPage-Btn").click(function(){
 				$("#frmUserPage").submit();
 			})
-			$("#index").click(function(){
-				
-			})
+			
+			/* $("#userSearch").keypress(function(){
+				alert($("#userSearch").value);
+			}) */
 		})
+		
 		function postIndex(){
 			$("#frmIndex").submit();
 		}
+		
+		function Search(userName){ 
+				$.ajax({
+					type : "post",
+					data : {"userName" : userName},
+					url : "UserSearch",
+					success : function(data){
+						$("#searchList").html(data);
+					}
+				})
+		}
+		
+
 	</script>
 	<body>
 
@@ -73,14 +88,19 @@
 				<!-- Header -->
 					<header id="header">
 						<h1><a href="javascript:postIndex()" id="">Future Imperfect</a></h1>
+						
+										<!-- 검색 창 -->
+						
+						<div style="width: 17%; ;text-align: center; background-color: #FCE2EA; border: solid 0px;">
+							<input  
+							type="text" style ="height: 100%;" onkeyup="javascript:Search(this.value)" id = "userSearch" name="userSearch" placeholder="Search" />
+							<div id = "searchList" style ="background-color : white;"></div>
+						</div>
+						
+						
 						<nav class="main">
+						
 							<ul>
-								<li class="search">
-									<a class="fa-search" href="#search">Search</a>
-									<form id="search" method="get" action="#">
-										<input type="text" name="query" placeholder="Search" />
-									</form>
-								</li>
 								<li class="menu">
 									<a class="fa-bars" href="#menu">Menu</a>
 								</li>

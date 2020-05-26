@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.handbook.vo.S_BOARD;
+import com.handbook.vo.S_FRIENDLIST;
 import com.handbook.vo.S_USERINFO;
 
 @Repository("s_mapper")
@@ -24,4 +25,10 @@ public interface S_Mapper {
 	public void detailViewDelete(String b_num);
 
 	public List<S_USERINFO> frinedList(S_USERINFO userinfo);
+	
+	public S_USERINFO getUserPage(String user_id);
+	
+	public void ApplyFriend(S_FRIENDLIST friendList);
+	
+	public List <S_USERINFO>  UserSearch(String userName);
 }
