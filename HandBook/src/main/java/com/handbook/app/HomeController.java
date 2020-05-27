@@ -74,11 +74,12 @@ public class HomeController {
 
 	@PostMapping("index")
 	public String index(S_USERINFO userinfo, Model model) {
-		
+
 		S_USERINFO info = s_service.userlogin(userinfo);
 		model.addAttribute("info", info);
 		return "S_index.c";
 	}
+
 	// �쑀���젙蹂�
 	@PostMapping("S_myPage")
 	public String S_myPage(S_USERINFO userinfo, Model model) {
@@ -86,6 +87,7 @@ public class HomeController {
 		model.addAttribute("info", info);
 		return "S_myPage.c";
 	}
+
 	// 濡쒓렇�씤
 	@PostMapping("user_login")
 	public String user_login(S_USERINFO userinfo, HttpSession session, Model model) {
@@ -99,6 +101,7 @@ public class HomeController {
 		}
 		return "S_login.s";
 	}
+
 	@GetMapping("S_index")
 	public String index() {
 		return "S_index.c";
@@ -125,8 +128,6 @@ public class HomeController {
 		return "S_index.c";
 	}
 
-
-
 	// �븘�씠�뵒 以묐났�솗�씤
 	@PostMapping("idChk")
 	@ResponseBody
@@ -150,10 +151,9 @@ public class HomeController {
 		return "S_login.s";
 	}
 
-
 	@PostMapping("user_Update")
-	public String userUpdate(S_USERINFO userinfo, HttpSession session, MultipartFile file, HttpServletRequest req,String realName)
-			throws IIOException, Exception {
+	public String userUpdate(S_USERINFO userinfo, HttpSession session, MultipartFile file, HttpServletRequest req,
+			String realName) throws IIOException, Exception {
 		String inputPass = userinfo.getUser_pwd();
 		String pwd = pwdEncoder.encode(inputPass);
 		userinfo.setUser_pwd(pwd);
@@ -161,10 +161,10 @@ public class HomeController {
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
 			new File(uploadPath + req.getParameter("user_img")).delete();
 
-			String imgUploadPath = uploadPath + File.separator ;
+			String imgUploadPath = uploadPath + File.separator;
 			String imgPath = imgUploadPath;
 			String fileName = "";
-			//fileName = UploadFileUtils.fileUpload(imgPath,  file.getBytes(),realName);
+			// fileName = UploadFileUtils.fileUpload(imgPath, file.getBytes(),realName);
 			userinfo.setUser_img(realName);
 		} else {
 			userinfo.setUser_img(req.getParameter("user_img"));
@@ -175,17 +175,17 @@ public class HomeController {
 	}
 
 	@PostMapping("BoardInsert")
-	public String BoardInsert(S_BOARD board, String check, MultipartFile file, HttpServletRequest req, Model model,String realName)
-			throws IOException, Exception {
-			logger.info("POST  -  湲��벐湲�");
+	public String BoardInsert(S_BOARD board, String check, MultipartFile file, HttpServletRequest req, Model model,
+			String realName) throws IOException, Exception {
+		logger.info("POST  -  湲��벐湲�");
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
-			
-			//로컬주소
-	
+
+			// 로컬주소
+
 			String fileName = "";
-			
+
 			board.setB_img(realName);
-		}else {//�뙆�씪泥⑤�瑜� �븯吏� �븡�쑝硫�
+		} else {// �뙆�씪泥⑤�瑜� �븯吏� �븡�쑝硫�
 			board.setB_num("");
 		}
 		s_service.BoardInsert(board);
@@ -197,67 +197,64 @@ public class HomeController {
 	public S_ImgPathName subName(MultipartFile file) throws Exception {
 		String imgUploadPath = uploadPath + File.separator + "imgUpload";
 		String ymdPath = UploadFileUtils.calcPath(imgUploadPath);
-		//경로만 들고옴
-		System.out.println("ymdPath"+ymdPath);
-		S_ImgPathName img = UploadFileUtils.fileUpload(file.getOriginalFilename(),ymdPath);
-		System.out.println("파일네임"+img.getRealName());
-		
-		String imgUploadPath1 = uploadPath + File.separator ;
+		// 경로만 들고옴
+		System.out.println("ymdPath" + ymdPath);
+		S_ImgPathName img = UploadFileUtils.fileUpload(file.getOriginalFilename(), ymdPath);
+		System.out.println("파일네임" + img.getRealName());
+
+		String imgUploadPath1 = uploadPath + File.separator;
 		String imgPath = imgUploadPath1;
-		//로컬주소
-		img = UploadFileUtils.subFileUpload(imgPath,  file.getBytes(),img);
+		// 로컬주소
+		img = UploadFileUtils.subFileUpload(imgPath, file.getBytes(), img);
 		return img;
 	}
+
 	@PostMapping("detailViewDelete")
 	public String detailViewDelete(String b_num) {
 		s_service.detailViewDelete(b_num);
 		return "S_index.c";
 	}
-	
+
 	@PostMapping("friendList")
-	public  String friendList(Model model,HttpSession session,S_USERINFO userinfo,S_FRIENDLIST friendlist) {
+	public String friendList(Model model, HttpSession session, S_USERINFO userinfo, S_FRIENDLIST friendlist) {
 		List<S_USERINFO> arr = s_service.friendList(userinfo);
 		System.out.println(arr.size());
-		model.addAttribute("arr",arr);
+		model.addAttribute("arr", arr);
 		return "callBack/FriendList";
 	}
+
 	@GetMapping("S_userPage")
 	public String UserPage() {
 		return "S_userPage.h";
 	}
-	
+
 	@PostMapping("S_userPage")
-	public String UserPage(String f_id,S_USERINFO userinfo,Model model) {
-		System.out.println("진입");
-		S_USERINFO userInfo = s_service.getUserPage(f_id);
-		model.addAttribute("userInfo",userInfo);
+	public String UserPage(S_USERINFO userinfo,S_FRIENDLIST fList,Model model) {
+		S_USERINFO userInfo = s_service.getUserPage(fList.getF_id());
+		model.addAttribute("userInfo", userInfo);
 		return "S_userPage.h";
 	}
-	
-	//친구신청
-	/* m_state : 자신의 상태
-	 * f_state : 친구의 상태
-	 * flag 값 1: 친구신청 발신상태
-	 * flag 값 2: 친구신청 수신상태
-	 * flag 값 3: 이미 친구상태
-	 * 친구 신청을 누를경우 DB S_friend 안에 값을 넣는다.
-	 *  */
+
+	// 친구신청
+	/*
+	 * m_state : 자신의 상태 f_state : 친구의 상태 flag 값 1: 친구신청 발신상태 flag 값 2: 친구신청 수신상태
+	 * flag 값 3: 이미 친구상태 친구 신청을 누를경우 DB S_friend 안에 값을 넣는다.
+	 */
 	@PostMapping("ApplyFriend")
 	public void ApplyFriend(S_FRIENDLIST friendList) {
 		s_service.ApplyFriend(friendList);
 	}
-	
+
 	/* 유저 검색 */
 	@PostMapping("UserSearch")
-	public String UserSearch(String userName,Model model )  {
-		
-			List <S_USERINFO> userInfo = s_service.UserSearch(userName);
-			if(userInfo.size()==0 || userName == "") {
-				 return "callBack/NotUserList";
-			}else {
-				model.addAttribute("userInfo",userInfo);
-				 return "callBack/UserList";
-			}
+	public String UserSearch(String userName, Model model) {
+		List<S_USERINFO> userInfo = s_service.UserSearch(userName);
+		if (userInfo.size() == 0 || userName == "") {
+			return "callBack/NotUserList";
+		} else {
+			model.addAttribute("userInfo", userInfo);
+			return "callBack/UserList";
+		}
 	}
-	
+
 }

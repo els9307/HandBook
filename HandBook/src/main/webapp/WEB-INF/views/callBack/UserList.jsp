@@ -15,6 +15,7 @@
 					</h3>
 				<form action="S_userPage" method = "post" id = "frmUserId">
 					<input type = "hidden" id="userID" name ="f_id">
+					<input type = "hidden" id="fuser_id" name ="fuser_id" value = "${session_id }">
 				</form>
 				</header>
 			</c:forEach>

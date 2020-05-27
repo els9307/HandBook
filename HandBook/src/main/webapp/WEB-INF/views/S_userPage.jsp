@@ -70,8 +70,20 @@ function ApplyFriend(userId,friendId){
 	
 </div>
 <ul class="actions">
-	<li><a href= "javascript:ApplyFriend('${session_id}','${userInfo.user_id}')" class="button big" >친구신청</a></li>
-	<li><a href="#" class="button big">친구</a></li>
-	<li><a href="#" class="button big">정보</a></li>
+
+		<c:choose>
+		<c:when test="${name eq '김철수'}"> 
+			<li><a href= "javascript:ApplyFriend('${session_id}','${userInfo.user_id}')" class="button big" >친구 신청</a></li>
+		</c:when>
+		<c:when test="${name eq '박영희'}">
+			<li><a href= "javascript:ApplyFriend('${session_id}','${userInfo.user_id}')" class="button big" >수락 대기중</a></li>
+		</c:when>
+		<c:when test="${name eq '박영희'}">
+			<li><a href= "javascript:ApplyFriend('${session_id}','${userInfo.user_id}')" class="button big" >친구 끊기</a></li>
+		</c:when>
+		</c:choose>
+
+		<li><a href="#" class="button big">친구</a></li>
+		<li><a href="#" class="button big">정보</a></li>
 </ul>
 </article>
