@@ -26,15 +26,14 @@ public class UploadFileUtils {
 	//파일저장
 	public static S_ImgPathName subFileUpload(String imgPath,byte[] fileData,S_ImgPathName img) throws IOException {
 		//임시폴더 저장 경로
-		File SubName = new File(imgPath,img.getSubName());
-			System.out.println(SubName);
+		File SubName = new File(imgPath,img.getSubAddress()+img.getSubName());
+			
 			//파일저장
 			FileCopyUtils.copy(fileData, SubName);
 			
-			
 			if(SubName.exists()) {//파일이 존재하면
 				System.out.println("파일존재");
-				File copyTest = new File("C:\\Users\\els78\\Documents\\HandBook\\HandBook\\src\\main\\webapp\\resources\\imgUpload\\2020\\05\\26\\s\\real");
+				File copyTest = new File(imgPath + img.getRealAddress());
 				System.out.println("이 경로는 ?" + copyTest);
 				//real 폴더 생성
 				if(!copyTest.exists()) copyTest.mkdirs();
@@ -50,16 +49,12 @@ public class UploadFileUtils {
 	public static void copyFile(File SubName,File a) throws IOException {
 	
 			System.out.println("copyFile 진입");
-			System.out.println(SubName);
-			System.out.println(a);
 			InputStream inStream = null;
 			OutputStream outputStream = null;
 			
 			try {
 				inStream = new FileInputStream(SubName);
-				System.out.println("1");
 				outputStream = new FileOutputStream(a);
-				System.out.println("2");
 				byte[] buffer = new byte[1024];
 				
 				int length;
@@ -67,13 +62,25 @@ public class UploadFileUtils {
 				while((length = inStream.read(buffer)) >0) {
 					outputStream.write(buffer,0,length);
 				}
-				System.out.println("끝");
+				
+
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} finally {
 				inStream.close();
 				outputStream.close();
+				
 			}
+	}
+	public static void fileDelete(File Name) {
+		System.out.println("진입");
+		if(Name.exists()) {
+			if(Name.delete()) {
+				System.out.println("성공?");
+			}else {
+				System.out.println("실패");
+			}
+		}
 	}
 	//Get RealName
 
@@ -84,9 +91,16 @@ public class UploadFileUtils {
 		UUID uid = UUID.randomUUID();
 		String newFileName = uid + "_" + fileName;
 		S_ImgPathName img = new S_ImgPathName();
-		img.setSubName(File.separator + "imgUpload" + ymdPath + "\\s"+ File.separator + newFileName);
-		img.setRealName(newFileName);
-		
+		/*
+		 * 	태영수정
+		 *  Address - 폴더 경로
+		 *  Name 	- UUID생성 , 파일이름
+		 *  
+		 */
+		img.setSubAddress(File.separator + "imgUpload" + ymdPath + "\\s"+ File.separator );
+		img.setRealAddress(File.separator + "imgUpload" + ymdPath + "\\s"+ "\\real" + File.separator);
+		img.setSubName( newFileName);
+		img.setRealName( newFileName );
 		return img;
 	}
 	

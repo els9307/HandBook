@@ -175,16 +175,16 @@ public class HomeController {
 	}
 
 	@PostMapping("BoardInsert")
-	public String BoardInsert(S_BOARD board, String check, MultipartFile file, HttpServletRequest req, Model model,String realName)
+	public String BoardInsert(S_BOARD board,S_ImgPathName img, MultipartFile file, HttpServletRequest req, Model model)
 			throws IOException, Exception {
 			logger.info("POST  -  湲��벐湲�");
+			System.out.println(img.getImgPath() + img.getSubAddress() + img.getSubName());
+			System.out.println(img.getRealName());
+			System.out.println("asd"+img.getRealAddress()+img.getRealName());
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
-			
-			//로컬주소
-	
-			String fileName = "";
-			
-			board.setB_img(realName);
+			board.setB_img(img.getRealAddress()+img.getRealName());
+			File subName = new File(img.getImgPath() + img.getSubAddress() + img.getSubName());
+			UploadFileUtils.fileDelete(subName);
 		}else {//�뙆�씪泥⑤�瑜� �븯吏� �븡�쑝硫�
 			board.setB_num("");
 		}
@@ -198,14 +198,22 @@ public class HomeController {
 		String imgUploadPath = uploadPath + File.separator + "imgUpload";
 		String ymdPath = UploadFileUtils.calcPath(imgUploadPath);
 		//경로만 들고옴
-		System.out.println("ymdPath"+ymdPath);
 		S_ImgPathName img = UploadFileUtils.fileUpload(file.getOriginalFilename(),ymdPath);
-		System.out.println("파일네임"+img.getRealName());
 		
 		String imgUploadPath1 = uploadPath + File.separator ;
-		String imgPath = imgUploadPath1;
+		img.setImgPath(imgUploadPath1);
 		//로컬주소
-		img = UploadFileUtils.subFileUpload(imgPath,  file.getBytes(),img);
+		img = UploadFileUtils.subFileUpload(img.getImgPath(),  file.getBytes(),img);
+		return img;
+	}
+	
+	@PostMapping("deleteImg")
+	@ResponseBody
+	public S_ImgPathName deleteImg(String DeleteNum ,S_ImgPathName img, MultipartFile File) {
+		File subName = new File(img.getImgPath()+img.getSubAddress()+img.getSubName());
+		File realName = new File(img.getImgPath() + img.getRealAddress() + img.getRealName());
+		UploadFileUtils.fileDelete(subName);
+		UploadFileUtils.fileDelete(realName);
 		return img;
 	}
 	@PostMapping("detailViewDelete")
