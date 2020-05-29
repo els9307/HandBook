@@ -241,8 +241,10 @@ public class HomeController {
 
 	@PostMapping("S_userPage")
 	public String UserPage(S_USERINFO userinfo,S_FRIENDLIST fList,Model model) {
+		S_FRIENDLIST friendList = s_service.GetState(fList);
 		S_USERINFO userInfo = s_service.getUserPage(fList.getF_id());
 		model.addAttribute("userInfo", userInfo);
+		model.addAttribute("friendList", friendList);
 		return "S_userPage.h";
 	}
 

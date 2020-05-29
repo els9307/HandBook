@@ -67,4 +67,9 @@ public class S_Service {
 		List <S_USERINFO> userInfo = s_mapper.UserSearch(userName);
 		return userInfo;
 	}
+	
+	public S_FRIENDLIST GetState(S_FRIENDLIST fList){
+		S_FRIENDLIST friendList = s_mapper.GetState(fList);
+		return friendList;
+	}
 }

@@ -31,4 +31,5 @@ public interface S_Mapper {
 	public void ApplyFriend(S_FRIENDLIST friendList);
 	
 	public List <S_USERINFO>  UserSearch(String userName);
+	public S_FRIENDLIST GetState(S_FRIENDLIST fList);
 }
