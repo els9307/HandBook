@@ -210,8 +210,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 	
 	<!-- 친구 신청 상태를 나타내는 플레그 값 출력  m_state,f_state-->
-	<select id="getState" parameterType="com.handbook.vo.S_FRIENDLIST" resultMap="S_FRIENDLIST">
-	
+	<select id="GetState" parameterType="com.handbook.vo.S_FRIENDLIST" resultMap="S_FRIENDLIST">
+		<![CDATA[
+			-- State Check
+			SELECT *
+			FROM S_USERINFO
+			WHERE USER_ID = #{user_id}
+		]]>
 	</select>
 	
 </mapper>

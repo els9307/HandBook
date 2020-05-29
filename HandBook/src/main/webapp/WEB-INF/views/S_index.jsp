@@ -5,9 +5,8 @@
 
 <script>
 $(document).ready(function(){
-/*  	$("#ex1").on('hide.bs.modal', function(){
-	    alert('The modal is about to be hidden.');
-	  });  */
+	
+	 
 	$.ajax({
 		type : "post",
 		url : "ListResult",
@@ -59,6 +58,8 @@ $(document).ready(function(){
  		}
  		
 	});
+	
+	
 	$("#ex1").on('click',"a", function(e){
   		var DeleteNum = "1";
   		var subName = $("#subName").val();
@@ -95,21 +96,20 @@ function Fn_FileImgDelete(DeleteNum,subName,subAddress,imgPath,realName,realAddr
 <article class="post">
 	<header>
 	
-	
 		<div class="meta">
 			<!-- <time class="published" datetime="2015-11-01">November 1, 2015</time> -->
 			<a href="#" class="author"><span class="name">${info.user_name }</span><img src="${pageContext.request.contextPath}${info.user_img}" alt="" /></a>
 		</div>
 		<div class="title">
 			<h2><a href="#"></a></h2>
-			<p><a href="#ex1" rel="modal:open" id="model-Open">${session_id }님 무슨 생각을 하시고 계신가요 ?</a></p> 
+			<p><a href="#ex1" rel="modal:open" id="model-Open" >${session_id }님 무슨 생각을 하시고 계신가요 ?</a></p> 
 			<pre>${board.b_content }</pre>
 		</div>
 
 	</header>
 <div id="listResult"></div>
 
-<div id="ex1" class="modal" >
+<div id="ex1" class="modal">
 <!-- <a href="#close-modal" rel="modal:close" class="close-modal ">Close</a> -->
 	<form action="BoardInsert" method="post" id="frm_B_Insert" enctype="multipart/form-data">
 	<input type="hidden" id="b_user_id" name="b_user_id" value="${session_id }">
