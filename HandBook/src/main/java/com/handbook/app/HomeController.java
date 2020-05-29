@@ -174,18 +174,17 @@ public class HomeController {
 		return "redirect:/";
 	}
 
+	
+	//게시글 insert
 	@PostMapping("BoardInsert")
 	public String BoardInsert(S_BOARD board,S_ImgPathName img, MultipartFile file, HttpServletRequest req, Model model)
 			throws IOException, Exception {
-			logger.info("POST  -  湲��벐湲�");
-			System.out.println(img.getImgPath() + img.getSubAddress() + img.getSubName());
-			System.out.println(img.getRealName());
-			System.out.println("asd"+img.getRealAddress()+img.getRealName());
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
+			//img 컬럼에 데이터값 저장을 위한 setter
 			board.setB_img(img.getRealAddress()+img.getRealName());
 			File subName = new File(img.getImgPath() + img.getSubAddress() + img.getSubName());
 			UploadFileUtils.fileDelete(subName);
-		}else {//�뙆�씪泥⑤�瑜� �븯吏� �븡�쑝硫�
+		}else {//파일이 선택되지 않았다면 
 			board.setB_num("");
 		}
 		s_service.BoardInsert(board);
@@ -196,16 +195,16 @@ public class HomeController {
 	@ResponseBody
 	public S_ImgPathName subName(MultipartFile file) throws Exception {
 		String imgUploadPath = uploadPath + File.separator + "imgUpload";
+		//저장하는 날자로 폴더 생성 
 		String ymdPath = UploadFileUtils.calcPath(imgUploadPath);
-		// 경로만 들고옴
-		System.out.println("ymdPath" + ymdPath);
+		
+		//저장하는 파일의 이름을 생성
 		S_ImgPathName img = UploadFileUtils.fileUpload(file.getOriginalFilename(), ymdPath);
-		System.out.println("파일네임" + img.getRealName());
 
-		//경로만 들고옴
+		//파일이 저장되는 로컬주소 
 		String imgUploadPath1 = uploadPath + File.separator ;
 		img.setImgPath(imgUploadPath1);
-		//로컬주소
+		//파일이 저장되는 로컬주소 및 폴더주소
 		img = UploadFileUtils.subFileUpload(img.getImgPath(),  file.getBytes(),img);
 		return img;
 	}
