@@ -18,7 +18,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
       <!-- jquery 사용을 위함  -->
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script> 
+     <!--  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>  -->
    </head>
    <style>
       .logoBox {
@@ -70,9 +70,8 @@
                }
             })
       }
-      
    </script>
-   <body>
+   <body id="a">
 <!-- Wrapper -->
 <form action="S_myPage" method="post" id="frmUserPage">
    <input type="hidden" name="user_id" value="${session_id}">

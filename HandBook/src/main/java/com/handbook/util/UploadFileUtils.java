@@ -33,12 +33,12 @@ public class UploadFileUtils {
 			
 			if(SubName.exists()) {//파일이 존재하면
 				System.out.println("파일존재");
-				File copyTest = new File(imgPath + img.getRealAddress());
-				System.out.println("이 경로는 ?" + copyTest);
+				File copy = new File(imgPath + img.getRealAddress());
+				System.out.println("이 경로는 ?" + copy);
 				//real 폴더 생성
-				if(!copyTest.exists()) copyTest.mkdirs();
-				File a = new File (copyTest,img.getRealName());
-				copyFile(SubName,a);
+				if(!copy.exists()) copy.mkdirs(); // copy에 경로가 존재하지 않으면 폴더 생성
+				File realName = new File (copy,img.getRealName());
+				copyFile(SubName,realName);
 			}
 		System.out.println("RealName의 경로" + img.getRealName());
 		
@@ -46,7 +46,7 @@ public class UploadFileUtils {
 	}
 	//파일 move
 	//s폴더(임시폴더에 있는 파일을 ) 본 폴더로 옮기는 작업
-	public static void copyFile(File SubName,File a) throws IOException {
+	public static void copyFile(File SubName,File realName) throws IOException {
 	
 			System.out.println("copyFile 진입");
 			InputStream inStream = null;
@@ -54,7 +54,7 @@ public class UploadFileUtils {
 			
 			try {
 				inStream = new FileInputStream(SubName);
-				outputStream = new FileOutputStream(a);
+				outputStream = new FileOutputStream(realName);
 				byte[] buffer = new byte[1024];
 				
 				int length;
@@ -72,13 +72,13 @@ public class UploadFileUtils {
 				
 			}
 	}
-	public static void fileDelete(File Name) {
+	public static void fileDelete(File DeleteName) {
 		System.out.println("진입");
-		if(Name.exists()) {
-			if(Name.delete()) {
-				System.out.println("성공?");
+		if(DeleteName.exists()) {		//파일이 존재하면
+			if(DeleteName.delete()) { //해달 파일을 삭제
+				System.out.println("성공!");
 			}else {
-				System.out.println("실패");
+				System.out.println("실패!");
 			}
 		}
 	}
