@@ -168,24 +168,4 @@ function Fn_FileImgDelete(DeleteNum,subName,subAddress,imgPath,realName,realAddr
 	 	 	<p><a href="#" id="x" rel="modal:close">sda</a></p>
 	
 </div>
-<%-- <div id="test123123123" class="modal" data-backdrop="static">
-	<input type="hidden" id="subName" name="subName">
-	<input type="hidden" id="subAddress" name="subAddress">
-	<input type="hidden" id="realName" name="realName">
-	<input type="hidden" id="realAddress" name="realAddress">
-	<input type="hidden" id="imgPath" name="imgPath">
-<!-- <a href="#close-modal" rel="modal:close" class="close-modal ">Close</a> -->
-	<form action="BoardInsert" method="post" id="frm_B_Insert" enctype="multipart/form-data">
-	<input type="hidden" id="b_user_id" name="b_user_id" value="${session_id }">
-		<div>제목 : <input type="text" style="width: 60%; display: inline;" id="b_title" name="b_title" class="ex1-Title"></div>
-			<p style="display: contents;">내용 : </p>
-			<textarea id="b_content" name="b_content" rows="" cols="" ></textarea>
-			<div class="mini-posts">
-				<div class="select_img"><img id="img" src="" /></div>
-			</div>
-		 	<input type="file" id="gdsImg" name="file" />
-	</form>
-	 	 	<div style="text-align: right;"><input type="button" value="확인" id="B_Inser_Btn" /></div>
-	
-</div> --%>
 </article>
