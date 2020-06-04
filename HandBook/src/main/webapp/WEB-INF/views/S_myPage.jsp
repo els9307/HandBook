@@ -13,22 +13,26 @@ $(document).ready(function(){
 		} */
 		
 //	})
-	$("#gdsImg").change(function(){
-		alert("123123");
+	$("#myPageImg").change(function(){
 		var form = $("#frmUserUpdate")[0];
 		var data = new FormData(form);
 		$.ajax({
 			type : "post",
-			url : "RealName",
+			url : "subName",
 			data : data,
 			processData : false,
 			contentType : false,
 			cache : false,
 			timeout : 600000,
-			success : function(realName){
-				alert(realName);
+			success : function(img){
+      			$("#subName").val(img.subName);
+      			$("#subAddress").val(img.subAddress);
+      			$("#imgPath").val(img.imgPath);
+      			$("#realName").val(img.realName);
+      			$("#realAddress").val(img.realAddress);
+      			var subName = img.subName;
+      			alert(subName);
 				$("#UserUpdate_Btn").click(function(){
-					$("#realName").val(realName);
 					$("#frmUserUpdate").submit();
 					alert("다시 로그인 해 주세요.");
 				})
@@ -47,8 +51,13 @@ $(document).ready(function(){
 <!-- Form -->
 	<h3>회원정보 수정</h3>
 	<form method="post" action="user_Update" id="frmUserUpdate" enctype="multipart/form-data">
-	<input type="hidden" id="check" name="check">
+	<input type="hidden" id="b_user_id" name="b_user_id" value="${session_id }">
+	<input type="hidden" id="subName" name="subName">
+	<input type="hidden" id="subAddress" name="subAddress">
 	<input type="hidden" id="realName" name="realName">
+	<input type="hidden" id="realAddress" name="realAddress">
+	<input type="hidden" id="imgPath" name="imgPath">
+	<input type="hidden" id="UploadFlag" name="UploadFlag" value="2"> 
 		<div class="row uniform">
 			<div class="6u 12u$(xsmall)">
 				<h3>아이디</h3>
@@ -57,7 +66,7 @@ $(document).ready(function(){
 			<div class="mini-posts">
 				<label for="gdsImg">이미지</label>
 				 <div class="select_img"><img src="${pageContext.request.contextPath}${info.user_img}" /></div>
-				<input type="file" id="gdsImg" name="file" />
+				<input type="file" id="myPageImg" name="file" />
 			<%-- 	<%=request.getRealPath("/") %> --%>
 			</div>
 			<div class="6u$ 12u$(xsmall)">
