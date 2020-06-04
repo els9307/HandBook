@@ -26,10 +26,15 @@ public interface S_Mapper {
 
 	public List<S_USERINFO> frinedList(S_USERINFO userinfo);
 	
-	public S_USERINFO getUserPage(String user_id);
+	public S_USERINFO getUserPage(S_FRIENDLIST fList);
 	
 	public void ApplyFriend(S_FRIENDLIST friendList);
+	public void EndFriend(S_FRIENDLIST friendList);
 	
 	public List <S_USERINFO>  UserSearch(String userName);
 	public S_FRIENDLIST GetState(S_FRIENDLIST fList);
+	
+	public int GetApplyCount(String fuser_id) ;
+	public List<S_FRIENDLIST> ApplyView(S_FRIENDLIST friendList);
+	public void AcceptFriend(S_FRIENDLIST friendList) ;
 }

@@ -3,20 +3,38 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="true" %>
 <script>
- $(document).ready(function(){
-
-	
+ $(document).ready(function(){	
+	 
  })
  
-function ApplyFriend(userId,friendId){
-	 $.ajax({
-			type : "post",
-			url : "ApplyFriend",
-			data : {"fuser_id" : userId,"f_id" : friendId},
-			success : function(data){
-				
-			}
-		})
+function AboutFriend(flag){
+	 $("#flag").val(flag);
+
+	 
+	if (flag == 0) {
+		 var applyConfirm = confirm("친구 신청하시겠습니까?");
+		if (applyConfirm) {
+			$("#applyFriend").submit();
+		} else {
+			return false;
+		}
+	} 
+	if (flag == 1) {
+		 var resetConfirm = confirm("친구신청을 취소하겠습니까?");
+		if (resetConfirm) {
+			$("#applyFriend").submit();
+		} else {
+			return false;
+		}
+	} 
+	if (flag == 2) {
+		 var endConfirm = confirm("친구를 끊겠습니까?");
+		if (endConfirm) {
+			$("#applyFriend").submit();
+		} else {
+			return false;
+		}
+	}
 }
 </script>
 
@@ -34,19 +52,7 @@ function ApplyFriend(userId,friendId){
 		</div>
 
 	</header>
-	
-	<!-- 이부분 ajax로 글리스트 출력 -->
-	<c:forEach items="${arr}" var="arr" varStatus="status">
-				<header>
-					<h3> 
-						<a href="javascript:GetFName('${arr.s_friendlist.f_id }')">${arr.s_friendlist.f_id }</a> 
-					</h3>
-					<a href="#" class="author"><img src="${pageContext.request.contextPath}${arr.user_thumbimg}" alt="" /></a>
-				</header>
-	</c:forEach>
-	
-	
-	
+
 	
 	<!-- 이부분 ajax로 글리스트 출력 -->
 
@@ -69,20 +75,25 @@ function ApplyFriend(userId,friendId){
 	 	 	<div style="text-align: right;"><input type="button" value="확인" id="B_Inser_Btn" /></div>
 	
 </div>
-<ul class="actions">
 
+<form id = "applyFriend" action="ApplyFriend" method = "post">
+	<input type = "hidden" id = "fuser_id" name = "fuser_id" value = "${session_id }"/>
+	<input type = "hidden" id = "f_id" name = "f_id" value = "${userInfo.user_id }"/>
+	<input type = "hidden" id = "flag" name = "flag"/>
+</form>
+
+<ul class="actions">
 		<c:choose>
-		<c:when test="${name eq '김철수'}"> 
-			<li><a href= "javascript:ApplyFriend('${session_id}','${userInfo.user_id}')" class="button big" >친구 신청</a></li>
+		<c:when test="${friendList.m_state eq null}"> 
+			<li><a href= "javascript:AboutFriend(0)" class="button big" >친구 신청</a></li>
 		</c:when>
-		<c:when test="${name eq '박영희'}">
-			<li><a href= "javascript:ApplyFriend('${session_id}','${userInfo.user_id}')" class="button big" >수락 대기중</a></li>
+		<c:when test="${friendList.m_state eq '1'}">
+			<li><a href= "javascript:AboutFriend(1)" class="button big" >수락 대기중</a></li>
 		</c:when>
-		<c:when test="${name eq '박영희'}">
-			<li><a href= "javascript:ApplyFriend('${session_id}','${userInfo.user_id}')" class="button big" >친구 끊기</a></li>
+		<c:when test="${friendList.m_state eq '2'}">
+			<li><a href= "javascript:AboutFriend(2)" class="button big" >친구 끊기</a></li>
 		</c:when>
 		</c:choose>
-
 		<li><a href="#" class="button big">친구</a></li>
 		<li><a href="#" class="button big">정보</a></li>
 </ul>

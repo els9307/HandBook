@@ -76,6 +76,8 @@ public class HomeController {
 	public String index(S_USERINFO userinfo, Model model) {
 
 		S_USERINFO info = s_service.userlogin(userinfo);
+		int getApplyCount = s_service.GetApplyCount(userinfo.getUser_id());
+		model.addAttribute("getApplyCount", getApplyCount);
 		model.addAttribute("info", info);
 		return "S_index.c";
 	}
@@ -95,6 +97,8 @@ public class HomeController {
 		boolean pwdMatch = pwdEncoder.matches(userinfo.getUser_pwd(), login.getUser_pwd());
 		if (login != null && pwdMatch == true) {
 			session.setAttribute("session_id", userinfo.getUser_id());
+			int getApplyCount = s_service.GetApplyCount(userinfo.getUser_id());
+			model.addAttribute("getApplyCount", getApplyCount);
 //			S_USERINFO info = s_service.userlogin(userinfo);
 //			model.addAttribute("info",info);
 			return "S_index.c";
@@ -228,10 +232,9 @@ public class HomeController {
 	@PostMapping("friendList")
 	public String friendList(Model model, HttpSession session, S_USERINFO userinfo, S_FRIENDLIST friendlist) {
 		List<S_USERINFO> arr = s_service.friendList(userinfo);
-		System.out.println(arr.size());
 		model.addAttribute("arr", arr);
 		return "callBack/FriendList";
-	}
+	}	
 
 	@GetMapping("S_userPage")
 	public String UserPage() {
@@ -239,9 +242,9 @@ public class HomeController {
 	}
 
 	@PostMapping("S_userPage")
-	public String UserPage(S_USERINFO userinfo,S_FRIENDLIST fList,Model model) {
+	public String UserPage(S_FRIENDLIST fList,Model model) {
 		S_FRIENDLIST friendList = s_service.GetState(fList);
-		S_USERINFO userInfo = s_service.getUserPage(fList.getF_id());
+		S_USERINFO userInfo = s_service.getUserPage(fList);
 		model.addAttribute("userInfo", userInfo);
 		model.addAttribute("friendList", friendList);
 		return "S_userPage.h";
@@ -253,8 +256,21 @@ public class HomeController {
 	 * flag 값 3: 이미 친구상태 친구 신청을 누를경우 DB S_friend 안에 값을 넣는다.
 	 */
 	@PostMapping("ApplyFriend")
-	public void ApplyFriend(S_FRIENDLIST friendList) {
-		s_service.ApplyFriend(friendList);
+	public String ApplyFriend(S_USERINFO userInfo,int flag,S_FRIENDLIST friendList,Model model) {
+		System.out.println("flag =================" +flag);
+		if(flag==0) {
+			System.out.println("진===============입" +flag);
+			s_service.ApplyFriend(friendList);	
+		}
+		else if(flag==1||flag==2) {
+			s_service.EndFriend(friendList);
+		}
+		userInfo = s_service.getUserPage(friendList);
+		S_FRIENDLIST fList = s_service.GetState(friendList);
+		model.addAttribute("friendList", fList);
+		model.addAttribute("userInfo", userInfo);
+
+		return "S_userPage.h";
 	}
 
 	/* 유저 검색 */
@@ -267,6 +283,26 @@ public class HomeController {
 			model.addAttribute("userInfo", userInfo);
 			return "callBack/UserList";
 		}
+	}
+	/* 친구 신청 결과 */
+	@PostMapping("ApplyView")
+	public String ApplyView(S_FRIENDLIST friendList, Model model) {
+		List<S_FRIENDLIST> applyList = s_service.ApplyView(friendList);
+		model.addAttribute("applyList", applyList);
+		return "callBack/ResultApply";
+	}
+	
+	@PostMapping("FriendAccept")
+	public String FriendAccept(S_FRIENDLIST friendList,int flag, Model model) {
+		if(flag == 1) {
+			s_service.AcceptFriend(friendList);
+		}
+		else if(flag == 2) {
+			s_service.EndFriend(friendList);
+		}
+		int getApplyCount = s_service.GetApplyCount(friendList.getF_id());
+		model.addAttribute("getApplyCount", getApplyCount);
+		return "S_index.c";
 	}
 
 }

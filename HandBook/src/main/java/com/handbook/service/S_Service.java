@@ -54,13 +54,17 @@ public class S_Service {
 		return arr;
 	}
 
-	public S_USERINFO  getUserPage(String user_id) {
-		S_USERINFO userInfo = s_mapper.getUserPage(user_id);
+	public S_USERINFO  getUserPage(S_FRIENDLIST fList) {
+		S_USERINFO userInfo = s_mapper.getUserPage(fList);
 		return userInfo;
 	}
 	
 	public void ApplyFriend(S_FRIENDLIST friendList) {
 		s_mapper.ApplyFriend(friendList);
+	}
+
+	public void EndFriend(S_FRIENDLIST friendList) {
+		s_mapper.EndFriend(friendList);
 	}
 	
 	public List <S_USERINFO>  UserSearch(String userName) {
@@ -72,4 +76,20 @@ public class S_Service {
 		S_FRIENDLIST friendList = s_mapper.GetState(fList);
 		return friendList;
 	}
+	
+	public int GetApplyCount(String fuser_id) {
+		int getApplyCount = s_mapper.GetApplyCount(fuser_id);
+		return getApplyCount;
+	}
+	
+	public List<S_FRIENDLIST> ApplyView(S_FRIENDLIST friendList) {
+		List<S_FRIENDLIST> applyList = s_mapper.ApplyView(friendList);
+		return applyList;
+	}
+	
+	public void AcceptFriend(S_FRIENDLIST friendList) {
+		s_mapper.AcceptFriend(friendList);
+	}
+	
+	
 }

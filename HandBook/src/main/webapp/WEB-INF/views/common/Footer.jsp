@@ -23,16 +23,27 @@
       })
    })
    
-
+function ApplyView(){
+	   $.ajax({
+		   type : "post",
+		   url : "ApplyView",
+	       data : {"fuser_id" : "${session_id}"},
+	       success : function(data){
+	    	   $("#resultApply").html(data);
+	       }
+	   })
+}
 </script>            
 <section id="sidebar">
 
    <!-- Intro -->
    <section id="intro">
-   <%--    <a href="#" class="logo"><img src="${pageContext.request.contextPath}${info.user_img}" alt="" /></a> --%>
    <img class="logoBox" src="${pageContext.request.contextPath}${info.user_img}">
       <header>
-         <h2>${session_id }</h2>
+      <div>
+         <h2>${session_id }  <a href ="javascript:ApplyView()">(${getApplyCount })</a></h2>
+         <div id = "resultApply"></div>
+      </div>   
       </header>
    </section>
 

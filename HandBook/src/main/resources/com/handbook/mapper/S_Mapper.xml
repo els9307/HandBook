@@ -32,10 +32,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
    <select id="frinedList" parameterType="com.handbook.vo.S_USERINFO" resultMap="S_USERINFO">
 		<![CDATA[
 			-- 친구 목록
-			SELECT SU.USER_ID,SF.F_ID,SF.M_STATE,SF.F_STATE,SF.REG_DATE
+			SELECT SU.USER_ID,SF.F_ID,SF.M_STATE,SF.F_STATE,SF.REG_DATE,SF.FUSER_ID
 			FROM S_USERINFO SU JOIN S_FRIEND SF
 			ON SU.USER_ID = SF.FUSER_ID	
-			WHERE SU.USER_ID =  #{user_id}
+			WHERE (SF.FUSER_ID = #{user_id} AND SF.M_STATE=2) OR (SF.F_ID = #{user_id} AND SF.M_STATE=2)
 			
 		]]>
 	</select>
@@ -162,7 +162,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		]]>
 	</delete>
 	
-	 <select id="getUserPage" parameterType="String" resultMap="S_USERINFO">
+	 <select id="getUserPage" parameterType="com.handbook.vo.S_FRIENDLIST" resultMap="S_USERINFO">
 		<![CDATA[
 			-- userPage
 			SELECT    SU.USER_ID
@@ -174,8 +174,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                      ,SU.USER_IMG
                      ,SU.USER_THUMBIMG
                      ,SU.MOD_DATE
-            FROM S_USERINFO SU
-            WHERE SU.USER_ID = #{user_id}
+            FROM S_USERINFO SU 
+            WHERE SU.USER_ID = #{fuser_id} 
 		]]>
 	</select>
 	
@@ -206,17 +206,54 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			FROM S_FRIEND
 			WHERE FUSER_ID = #{fuser_id} AND F_ID = #{f_id})
 
+
 		]]>
 	</insert>
+	<delete id="EndFriend" parameterType="com.handbook.vo.S_FRIENDLIST">
+		<![CDATA[
+			DELETE S_FRIEND 
+			WHERE FUSER_ID = #{fuser_id} AND F_ID = #{f_id}
+		]]>
+		
+	</delete>
 	
 	<!-- 친구 신청 상태를 나타내는 플레그 값 출력  m_state,f_state-->
 	<select id="GetState" parameterType="com.handbook.vo.S_FRIENDLIST" resultMap="S_FRIENDLIST">
 		<![CDATA[
 			-- State Check
 			SELECT *
-			FROM S_USERINFO
-			WHERE USER_ID = #{user_id}
+			FROM S_FRIEND
+			WHERE FUSER_ID = #{fuser_id} AND F_ID = #{f_id}
 		]]>
 	</select>
 	
+	<!-- 친구 요청 카운트 쿼리 -->
+	
+	<select id="GetApplyCount" parameterType="String" resultType="int">
+		<![CDATA[
+			-- Count Apply
+			SELECT COUNT(*)
+			FROM S_FRIEND
+			WHERE F_STATE = '1' AND F_ID = #{fuser_id}   
+		]]>
+	</select>
+	
+	<!-- 친구 요청 LIST -->
+	<select id="ApplyView" parameterType="com.handbook.vo.S_FRIENDLIST" resultMap="S_FRIENDLIST">
+		<![CDATA[
+			-- Count Apply
+			SELECT *
+			FROM S_FRIEND
+			WHERE F_STATE = '1' AND F_ID = #{fuser_id}  
+		]]>
+	</select>
+	
+	<update id="AcceptFriend" parameterType="com.handbook.vo.S_FRIENDLIST">
+		<![CDATA[
+			-- Accept Friend
+			UPDATE S_FRIEND SET
+			F_STATE = '2', M_STATE = '2',REG_DATE = SYSDATE
+			WHERE F_ID = #{f_id}   AND FUSER_ID = #{fuser_id}  
+		]]>
+	</update>
 </mapper>
