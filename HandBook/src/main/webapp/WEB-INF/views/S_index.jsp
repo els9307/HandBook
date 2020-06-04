@@ -20,6 +20,10 @@
     text-align: center;
     poin
 }
+#imgList{
+    height: 100px;
+    padding: 10px;
+}
 </style>
 <script>
 $(document).ready(function(){
@@ -35,11 +39,13 @@ $(document).ready(function(){
 	 })
 
 	 
-	$("#gdsImg").change(function(){
+	$("#IndexImg").change(function(){
 		var form =  $("#frm_B_Insert")[0];
 		var data = new FormData(form);
 		var text = "";
 		var textarea =  $("#b_content").val();
+
+    	$("#UploadFlag").val("1");
 		alert("123");
 		$.ajax({
             type: "POST",
@@ -51,14 +57,18 @@ $(document).ready(function(){
             timeout: 600000,
             success: function (img) {
             	var br = textarea + "<br><img src = ${pageContext.request.contextPath}"+img.realAddress+img.realName + "/>" ;
-     
       			$("#b_content").val(br);
       			$("#subName").val(img.subName);
       			$("#subAddress").val(img.subAddress);
       			$("#imgPath").val(img.imgPath);
       			$("#realName").val(img.realName);
       			$("#realAddress").val(img.realAddress);
-            	
+      			var newimg = $("<img/>");
+      			newimg.attr("id","imgList");
+      			newimg.attr("src","${pageContext.request.contextPath}"+img.subAddress+img.subName);
+      			//newimg.attr("src",img.imgPath+img.subAddress+img.subName);
+      			newimg.attr("target","_blank");
+      			$('.select_img').append(newimg);
       			$("#B_Inser_Btn").click(function(){
                 	$("#frm_B_Insert").submit();
     			});
@@ -68,13 +78,14 @@ $(document).ready(function(){
  		if(this.files && this.files[0]) {
   			var reader = new FileReader;
   			reader.onload = function(data) {
-   			$(".select_img img").attr("src", data.target.result).width(300);        
+   			$(".select_img img").attr("src", data.target.result).width(100);        
   			}
   			reader.readAsDataURL(this.files[0]);
  		}
+
  		
 	});
-	$('a[href="#ex7"]').click(function(event) {
+	$('a[href="#board_IN"]').click(function(event) {
 	      $(this).modal({
 	          fadeDuration: 250,
 	          escapeClose: false,
@@ -82,7 +93,11 @@ $(document).ready(function(){
 	          showClose: false
 	        });
 	      });
-	$("#x").click(function(){
+	$("#b_Update_Btn").click(function(){
+		alert("123");
+		$("#frmUpdate").submit();
+	})
+	$("#esc").click(function(){
 		var DeleteNum = "1";
   		var subName = $("#subName").val();
   		var subAddress = $("#subAddress").val();
@@ -91,8 +106,8 @@ $(document).ready(function(){
   		var realAddress = $("#realAddress").val();
   		$(".ex1-Title").val("");
   		$("#b_content").val("");
-  		$("#img").attr("src", "");
-  		$("#gdsImg").val("");
+  		$("#imgList").attr("src", "");
+  		$("#IndexImg").val("");
   		Fn_FileImgDelete(DeleteNum,subName,subAddress,imgPath,realName,realAddress);
 	})
 	  /* <div class="jquery-modal blocker current"> */
@@ -124,7 +139,9 @@ function Fn_FileImgDelete(DeleteNum,subName,subAddress,imgPath,realName,realAddr
 				"realName" : realName,
 				"realAddress" : realAddress},
        	success: function (img){
-       		alert(img);
+       		if(img.subName){//삭제된 파일 이름이 넘어오면
+       			alert("취소되었습니다.");
+       		}
        	}
 	})
 }
@@ -141,31 +158,36 @@ function Fn_FileImgDelete(DeleteNum,subName,subAddress,imgPath,realName,realAddr
 		<div class="title">
 			<h2><a href="#"></a></h2>
 			<%-- <p><a href="#test123123123" rel="modal:open" id="model-Open" >${session_id }님 무슨 생각을 하시고 계신가요 ?</a></p> --%> 
-			<p><a class="btn" href="#ex7">${session_id }님 무슨 생각을 하시고 계신가요 ?</a></p>
+			<p><a class="btn" href="#board_IN">${session_id }님 무슨 생각을 하시고 계신가요 ?</a></p>
 			<pre>${board.b_content }</pre>
 		</div>
 
 	</header>
 <div id="listResult"></div>
-<div id="ex7" class="modal">
-<input type="hidden" id="subName" name="subName">
+<div id="board_IN" class="modal">
+	<form action="BoardInsert" method="post" id="frm_B_Insert" enctype="multipart/form-data">
+	<input type="hidden" id="b_user_id" name="b_user_id" value="${session_id }">
+	<input type="hidden" id="subName" name="subName">
 	<input type="hidden" id="subAddress" name="subAddress">
 	<input type="hidden" id="realName" name="realName">
 	<input type="hidden" id="realAddress" name="realAddress">
 	<input type="hidden" id="imgPath" name="imgPath">
-<!-- <a href="#close-modal" rel="modal:close" class="close-modal ">Close</a> -->
-	<form action="BoardInsert" method="post" id="frm_B_Insert" enctype="multipart/form-data">
-	<input type="hidden" id="b_user_id" name="b_user_id" value="${session_id }">
+	<input type="hidden" id="UploadFlag" name="UploadFlag" value="1"> 
+	
 		<div>제목 : <input type="text" style="width: 60%; display: inline;" id="b_title" name="b_title" class="ex1-Title"></div>
 			<p style="display: contents;">내용 : </p>
 			<textarea id="b_content" name="b_content" rows="" cols="" ></textarea>
 			<div class="mini-posts">
-				<div class="select_img"><img id="img" src="" /></div>
+				<div class="select_img" >
+					
+				</div>
 			</div>
-		 	<input type="file" id="gdsImg" name="file" />
+		 	<input type="file" id="IndexImg" name="file" />
 	</form>
-	 	 	<div style="text-align: right;"><input type="button" value="확인" id="B_Inser_Btn" /></div>
-	 	 	<p><a href="#" id="x" rel="modal:close">sda</a></p>
+		 	<div style="text-align: right;">
+		 		<input type="button" value="확인" id="B_Inser_Btn" />
+		 		<a href="#" id="esc" rel="modal:close" style="border: 0px;"><input type="button" value="취소"></a>
+		 	</div>
 	
 </div>
 </article>

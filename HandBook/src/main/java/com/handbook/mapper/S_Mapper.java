@@ -21,6 +21,8 @@ public interface S_Mapper {
 	public void userUpdate(S_USERINFO userinfo);
 	public void testInsert(String test);
 	public void BoardInsert(S_BOARD board);
+	public void BoardUpdate(S_BOARD board);
+	public S_BOARD BoardDetail(S_BOARD board);
 	public List<S_BOARD> ListResult(S_BOARD board);
 	public void detailViewDelete(String b_num);
 
