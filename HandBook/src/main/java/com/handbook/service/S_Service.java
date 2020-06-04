@@ -39,7 +39,12 @@ public class S_Service {
 	public void BoardInsert(S_BOARD board) {
 		s_mapper.BoardInsert(board);
 	}
-
+	public void BoardUpdate(S_BOARD board) {
+		s_mapper.BoardUpdate(board);
+	}
+	public S_BOARD BoardDetail(S_BOARD board) {
+		return s_mapper.BoardDetail(board);
+	}
 	public List<S_BOARD> ListResult(S_BOARD board) {
 
 		return s_mapper.ListResult(board);

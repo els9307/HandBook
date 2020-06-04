@@ -133,6 +133,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                      ,TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS'))
 		]]>
 	</insert>
+	<update id="BoardUpdate" parameterType="com.handbook.vo.S_BOARD">
+		<![CDATA[
+			UPDATE
+			    S_BOARD
+			SET
+			    B_TITLE		= #{b_title}
+			   ,B_CONTENT	= #{b_content}
+			   ,MOD_DATE	= TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS')
+		]]>
+	</update>
 	<select id="ListResult" resultType="com.handbook.vo.S_BOARD">
 		<![CDATA[
 			SELECT 
@@ -151,6 +161,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			    ,MOD_DATE               as MOD_DATE
 			FROM
 			    S_BOARD
+		]]>
+	</select>
+	<!-- 한개 게시글을 들고오는 select만 -->
+	<select id="BoardDetail" resultType="com.handbook.vo.S_BOARD">
+		<![CDATA[
+			SELECT 
+			    *
+			FROM
+			    S_BOARD
+			WHERE
+			    1=1
+			AND 
+			    B_USER_ID = #{b_user_id}
+			AND 
+			    B_NUM = #{b_num}
 		]]>
 	</select>
 	<delete id="detailViewDelete" parameterType="String">

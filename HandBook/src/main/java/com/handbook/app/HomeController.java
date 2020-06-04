@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.IpAddressMatcher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import com.handbook.vo.S_BOARD;
 import com.handbook.vo.S_FRIENDLIST;
 import com.handbook.vo.S_ImgPathName;
 import com.handbook.vo.S_USERINFO;
+import com.zaxxer.hikari.util.SuspendResumeLock;
 
 /**
  * Handles requests for the application home page.
@@ -80,23 +82,18 @@ public class HomeController {
 		return "S_index.c";
 	}
 
-	// �쑀���젙蹂�
-	@PostMapping("S_myPage")
-	public String S_myPage(S_USERINFO userinfo, Model model) {
-		S_USERINFO info = s_service.userlogin(userinfo);
-		model.addAttribute("info", info);
-		return "S_myPage.c";
-	}
+
 
 	// 濡쒓렇�씤
 	@PostMapping("user_login")
 	public String user_login(S_USERINFO userinfo, HttpSession session, Model model) {
 		S_USERINFO login = s_service.userlogin(userinfo);
+		S_USERINFO info = s_service.userlogin(userinfo);
+		model.addAttribute("info",info);
 		boolean pwdMatch = pwdEncoder.matches(userinfo.getUser_pwd(), login.getUser_pwd());
 		if (login != null && pwdMatch == true) {
 			session.setAttribute("session_id", userinfo.getUser_id());
-//			S_USERINFO info = s_service.userlogin(userinfo);
-//			model.addAttribute("info",info);
+
 			return "S_index.c";
 		}
 		return "S_login.s";
@@ -138,7 +135,7 @@ public class HomeController {
 
 	// �쉶�썝媛��엯
 	@PostMapping("User_Join")
-	public String user_join(S_USERINFO userinfo) {
+	public String user_join(S_USERINFO userinfo,S_ImgPathName img) {
 		int result = s_service.idChk(userinfo);
 		if (result == 1) {
 			return "S_login.s";
@@ -147,25 +144,41 @@ public class HomeController {
 			String pwd = pwdEncoder.encode(inputPass);
 			userinfo.setUser_pwd(pwd);
 			s_service.userJoin(userinfo);
+			File realUserDir = new File(uploadPath + File.separator + "imgUpload\\"+userinfo.getUser_id());
+			File subUserDir = new File(uploadPath + File.separator + "imgUpload\\"+userinfo.getUser_id() + "\\profile");
+			//저장하는 날자로 폴더 생성 
+			UploadFileUtils.mkDir(subUserDir,realUserDir);
 		}
 		return "S_login.s";
 	}
 
+	// �쑀���젙蹂�
+	@PostMapping("S_myPage")
+	public String S_myPage(S_USERINFO userinfo, Model model) {
+		S_USERINFO info = s_service.userlogin(userinfo);
+		model.addAttribute("info", info);
+		return "S_myPage.c";
+	}
+	
 	@PostMapping("user_Update")
-	public String userUpdate(S_USERINFO userinfo, HttpSession session, MultipartFile file, HttpServletRequest req,
-			String realName) throws IIOException, Exception {
+	public String userUpdate(S_USERINFO userinfo, S_ImgPathName img, HttpSession session, MultipartFile file, HttpServletRequest req
+			) throws IIOException, Exception {
+		System.out.println("개인정보수정"+img.getSubName());
 		String inputPass = userinfo.getUser_pwd();
 		String pwd = pwdEncoder.encode(inputPass);
 		userinfo.setUser_pwd(pwd);
+		String imgPath = img.getRealAddress() +img.getRealName();
+		System.out.println(imgPath);
 		System.out.println("file    ==========" + file);
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
 			new File(uploadPath + req.getParameter("user_img")).delete();
-
-			String imgUploadPath = uploadPath + File.separator;
-			String imgPath = imgUploadPath;
-			String fileName = "";
-			// fileName = UploadFileUtils.fileUpload(imgPath, file.getBytes(),realName);
-			userinfo.setUser_img(realName);
+			File sub = new File(uploadPath + "\\imgUpload\\" + userinfo.getUser_id() + "\\profile"+ "\\sub");
+			File real = new File(uploadPath + "\\imgUpload\\" + userinfo.getUser_id() + "\\profile");
+			String path = img.getImgPath() +img.getSubAddress();
+			File folder = new File(path);
+			UploadFileUtils.copyFile(sub,real);
+			UploadFileUtils.subDireCtoryDelete(folder);
+			userinfo.setUser_img(imgPath);
 		} else {
 			userinfo.setUser_img(req.getParameter("user_img"));
 		}
@@ -177,45 +190,97 @@ public class HomeController {
 	
 	//게시글 insert
 	@PostMapping("BoardInsert")
-	public String BoardInsert(S_BOARD board,S_ImgPathName img, MultipartFile file, HttpServletRequest req, Model model)
+	public String BoardInsert(S_BOARD board,S_ImgPathName img, MultipartFile file,HttpServletRequest req)
 			throws IOException, Exception {
+		System.out.println("보드in");
 		if (file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
 			//img 컬럼에 데이터값 저장을 위한 setter
-			board.setB_img(img.getRealAddress()+img.getRealName());
-			File subName = new File(img.getImgPath() + img.getSubAddress() + img.getSubName());
-			UploadFileUtils.fileDelete(subName);
+			//board.setB_img(img.getRealAddress()+img.getRealName());
+			//게시물번호를 불러와서 
+			String path = img.getImgPath() +img.getSubAddress();
+			File folder = new File(path);
+			File subAddress = new File (img.getImgPath() + img.getSubAddress());
+			File realAddress = new File(img.getImgPath()+img.getRealAddress()); // + 아이디 + 게시묿번호 
+			System.out.println("아이디"+board.getB_user_id());
+			UploadFileUtils.copyFile(subAddress,realAddress);
+			UploadFileUtils.subDireCtoryDelete(folder);
 		}else {//파일이 선택되지 않았다면 
 			board.setB_num("");
 		}
 		s_service.BoardInsert(board);
 		return "redirect:S_index.c";
 	}
+	
+	@PostMapping("BoardDetail")
+	@ResponseBody
+	public S_BOARD BoardView(S_BOARD board,String session_id,Model model) {
+		System.out.println("업데이트 넘버 ="+board.getB_num());
+		System.out.println("세션아이디 = "+session_id);
+		board.setB_user_id(session_id);
+		S_BOARD Detail = s_service.BoardDetail(board);
+		System.out.println("디테일 b_content 값 = " + Detail.getB_content());
+		model.addAttribute("Detail",Detail);
+		System.out.println("끝");
+		return Detail;
+	}
+	
+	@PostMapping("Board_Update")
+	public String BoardUpdatee(S_BOARD board, S_ImgPathName img, MultipartFile file, HttpServletRequest req ) throws IOException {
+		System.out.println("업데이트"+board.getB_user_id());
+		System.out.println(img.getImgPath());
+		System.out.println(img.getRealAddress());
+		System.out.println(img.getSubAddress());
+		if(file.getOriginalFilename() != null && file.getOriginalFilename() != "") {
+			new File(uploadPath + req.getParameter("b_content")).delete();
+			String path = img.getImgPath() +img.getSubAddress();
+			File folder = new File(path);
+			File subAddress = new File (img.getImgPath() + img.getSubAddress());
+			File realAddress = new File(img.getImgPath()+img.getRealAddress()); // + 아이디 + 게시묿번호 
+			System.out.println("업데이트 서브 ="+subAddress);
+			System.out.println("업데이트 리얼 ="+realAddress);
+			System.out.println("아이디"+board.getB_user_id());
+			UploadFileUtils.copyFile(subAddress,realAddress);
+			UploadFileUtils.subDireCtoryDelete(folder);
+			s_service.BoardUpdate(board);
+		}
+		return "S_index.c";
+	}
 
 	@PostMapping("subName")
 	@ResponseBody
-	public S_ImgPathName subName(MultipartFile file) throws Exception {
+	public S_ImgPathName subName(MultipartFile file,String UploadFlag,String b_user_id) throws Exception {
+		S_ImgPathName img = new S_ImgPathName();
+		System.out.println("subName 플래그" + UploadFlag);
+		System.out.println("아이디="+b_user_id);
 		String imgUploadPath = uploadPath + File.separator + "imgUpload";
 		//저장하는 날자로 폴더 생성 
-		String ymdPath = UploadFileUtils.calcPath(imgUploadPath);
-		
+		String ymdPath = UploadFileUtils.calcPath(b_user_id,imgUploadPath);
 		//저장하는 파일의 이름을 생성
-		S_ImgPathName img = UploadFileUtils.fileUpload(file.getOriginalFilename(), ymdPath);
+		img = UploadFileUtils.fileUpload(file.getOriginalFilename(), ymdPath,UploadFlag,b_user_id);
 
-		//파일이 저장되는 로컬주소 
-		String imgUploadPath1 = uploadPath + File.separator ;
-		img.setImgPath(imgUploadPath1);
 		//파일이 저장되는 로컬주소 및 폴더주소
-		img = UploadFileUtils.subFileUpload(img.getImgPath(),  file.getBytes(),img);
+		if(UploadFlag.equals("1")) {//타임라인 글쓸때
+			//파일이 저장되는 로컬주소 
+			String imgUploadPath1 = uploadPath;
+			img.setImgPath(imgUploadPath1);
+			img = UploadFileUtils.subFileUpload(img.getImgPath(),  file.getBytes(),img);
+		}else if(UploadFlag.equals("2")) {// 회원정보수정 이미지
+			img = UploadFileUtils.fileUpload(file.getOriginalFilename(), ymdPath,UploadFlag,b_user_id);
+
+			//파일이 저장되는 로컬주소 
+			String imgUploadPath1 = uploadPath;
+			img.setImgPath(imgUploadPath1);
+			img = UploadFileUtils.subFileUpload(img.getImgPath(),  file.getBytes(),img);
+		}
 		return img;
 	}
 	
 	@PostMapping("deleteImg")
 	@ResponseBody
 	public S_ImgPathName deleteImg(String DeleteNum ,S_ImgPathName img, MultipartFile File) {
-		File subName = new File(img.getImgPath()+img.getSubAddress()+img.getSubName());
-		File realName = new File(img.getImgPath() + img.getRealAddress() + img.getRealName());
-		UploadFileUtils.fileDelete(subName);
-		UploadFileUtils.fileDelete(realName);
+		System.out.println("Delete Address  = "+ img.getImgPath()+img.getSubAddress());
+		File subAddress = new File(img.getImgPath()+img.getSubAddress());
+		UploadFileUtils.subDireCtoryDelete(subAddress);
 		return img;
 	}
 
